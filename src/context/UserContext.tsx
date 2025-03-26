@@ -37,7 +37,7 @@ const UserProvider = ({ children }: { children: React.ReactNode }) => {
 export const useUser = () => {
   const context = useContext(UserContext);
   if (context == undefined) {
-    throw new Error("use user must be used within UserPrvider");
+    throw new Error("use user must be used within UserProvider");
   }
 };
 export default UserProvider;
