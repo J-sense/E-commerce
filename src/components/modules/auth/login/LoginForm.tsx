@@ -10,15 +10,28 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 
-import { useForm } from "react-hook-form";
+import { FieldValues, SubmitHandler, useForm } from "react-hook-form";
 import { loginSchema } from "./LoginValidaton";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { loginUser } from "@/services/authService";
+import { toast } from "sonner";
 
 const LoginForm = () => {
   const form = useForm({
     resolver: zodResolver(loginSchema),
   });
-  const onSubmit = () => {};
+  const onSubmit: SubmitHandler<FieldValues> = async (data) => {
+    try {
+      const res = await loginUser(data);
+      if (res?.success) {
+        toast.success(res?.message);
+      } else {
+        toast.error(res?.message);
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
   return (
     <>
       <Form {...form}>
