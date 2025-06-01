@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 "use client";
 import NMImageUpload from "@/components/ui/core/NMImageUploader";
@@ -16,14 +17,38 @@ import { useState } from "react";
 import { FieldValues, SubmitHandler, useForm } from "react-hook-form";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { createShop } from "@/services/shop";
+import { toast } from "sonner";
 
 const Create = () => {
   const [imageFiles, setImageFiles] = useState<File[] | []>([]);
   const [imagePreview, setImagePreview] = useState<string[] | []>([]);
   const form = useForm();
-  const onSubmit: SubmitHandler<FieldValues> = (data) => {
-    const serviceOffer = data.servicesOffered.split(",").trim();
-    console.log(serviceOffer);
+  const {
+    formState: { isSubmitting },
+  } = form;
+  const onSubmit: SubmitHandler<FieldValues> = async (data) => {
+    const establishedYear = Number(data.establishedYear);
+    const servicesOffered = data.servicesOffered
+      .split(",")
+      .map((item: string) => item.trim())
+      .filter((item: string) => item !== "");
+    const modifiedData = { ...data, servicesOffered, establishedYear };
+    try {
+      const formData = new FormData();
+      formData.append("data", JSON.stringify(modifiedData));
+      formData.append("logo", imageFiles[0]);
+      const res = await createShop(formData);
+      console.log(res);
+      if (res.success) {
+        toast.success(res.message);
+      } else {
+        const err = res.errorSources[0].message;
+        toast.error(err);
+      }
+    } catch (error: any) {
+      return Error(error);
+    }
   };
   return (
     <div className="max-w-6xl mx-auto p-6">
@@ -252,7 +277,7 @@ const Create = () => {
                 </div>
 
                 {/* Services and Logo */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 justify-center">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4  justify-center">
                   <FormField
                     name="servicesOffered"
                     render={({ field }) => (
@@ -271,7 +296,7 @@ const Create = () => {
                       </FormItem>
                     )}
                   />
-                  <div className="space-y-2">
+                  <div className="space-y-2 mt-3">
                     <FormLabel className="text-gray-700 block">
                       Shop Logo
                     </FormLabel>
@@ -301,7 +326,7 @@ const Create = () => {
                     type="submit"
                     className="px-8 py-4 text-base bg-primary hover:bg-primary/90"
                   >
-                    Create Shop
+                    {isSubmitting ? "Creating...." : "Create"}
                   </Button>
                 </div>
               </div>
