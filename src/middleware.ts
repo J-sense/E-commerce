@@ -1,0 +1,22 @@
+import { NextRequest, NextResponse } from "next/server";
+import { getCurrentUser } from "./services/authService";
+const authroutes = ["/register", "/login"];
+export const middleware = async (request: NextRequest) => {
+  const user = await getCurrentUser();
+  const { pathname } = request.nextUrl;
+  if (!user) {
+    if (authroutes.includes(pathname)) {
+      return NextResponse.next();
+    } else {
+      return NextResponse.redirect(
+        new URL(
+          `http://localhost:3000/login?redirectPath=${pathname}`,
+          request.url
+        )
+      );
+    }
+  }
+};
+export const config = {
+  matcher: ["/create-shop"],
+};
