@@ -1,11 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getCurrentUser } from "./services/authService";
-const authroutes = ["/register", "/login"];
+
+const authRoutes = ["/login", "/register"];
 export const middleware = async (request: NextRequest) => {
-  const user = await getCurrentUser();
   const { pathname } = request.nextUrl;
+  const user = await getCurrentUser();
   if (!user) {
-    if (authroutes.includes(pathname)) {
+    if (authRoutes.includes(pathname)) {
       return NextResponse.next();
     } else {
       return NextResponse.redirect(
@@ -18,5 +19,5 @@ export const middleware = async (request: NextRequest) => {
   }
 };
 export const config = {
-  matcher: ["/create-shop"],
+  matcher: ["/login", "/create-shop"],
 };
