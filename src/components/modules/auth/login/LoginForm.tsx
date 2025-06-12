@@ -18,8 +18,12 @@ import { toast } from "sonner";
 import { motion } from "framer-motion";
 import { Lock, Mail } from "lucide-react";
 import Link from "next/link";
+import { useSearchParams, useRouter } from "next/navigation";
 
 const LoginForm = () => {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const redirect = searchParams.get("redirectPath");
   const form = useForm({
     resolver: zodResolver(loginSchema),
   });
@@ -33,6 +37,11 @@ const LoginForm = () => {
       const res = await loginUser(data);
       if (res?.success) {
         toast.success(res?.message);
+        if (redirect) {
+          router.push(redirect);
+        } else {
+          router.push("/");
+        }
       } else {
         toast.error(res?.message);
       }
