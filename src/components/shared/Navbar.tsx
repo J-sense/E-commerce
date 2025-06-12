@@ -14,12 +14,24 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { useUser } from "@/context/UserContext";
 import { logout } from "@/services/authService";
-
+import { usePathname, useRouter } from "next/navigation";
+const privateRoutes = [
+  "/login",
+  "/create-shop",
+  "/admin",
+  "/admin:page",
+  "/user",
+];
 export default function Navbar() {
+  const pathname = usePathname();
+  const router = useRouter();
   const { user, setLoading } = useUser();
   const handleDelete = () => {
     logout();
     setLoading(true);
+    if (privateRoutes.some((route) => pathname.match(route))) {
+      router.push("/");
+    }
   };
   return (
     <header className="border-b w-full">
