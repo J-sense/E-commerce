@@ -34,7 +34,7 @@ export function CategoryModel() {
   const form = useForm();
   const onSubmit: SubmitHandler<FieldValues> = async (data: any) => {
     const formData = new FormData();
-    formData.append("data", data);
+    formData.append("data", JSON.stringify(data));
     formData.append("icon", imageFiles[0] as File);
     const res = await createCategories(formData);
     console.log(res);
@@ -64,7 +64,7 @@ export function CategoryModel() {
             {/* Category Name */}
             <FormField
               control={form.control}
-              name="category"
+              name="name"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Category Name</FormLabel>

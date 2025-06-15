@@ -18,6 +18,8 @@ export const createShop = async (data: FormData) => {
   }
 };
 
+// if needed
+
 export const createCategories = async (data: FormData) => {
   try {
     const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_API}/category`, {
@@ -27,6 +29,17 @@ export const createCategories = async (data: FormData) => {
       },
       body: data,
     });
+
+    return res.json();
+  } catch (error: any) {
+    console.error("API Error:", error);
+    return { success: false, message: "Something went wrong." };
+  }
+};
+
+export const getAllCategories = async () => {
+  try {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_API}/category`);
     return res.json();
   } catch (error: any) {
     return Error(error);
