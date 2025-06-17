@@ -1,7 +1,11 @@
-import React from "react";
+import ManageBrands from "@/components/modules/shop/brands/ManageBrands";
 
-const ManageBrands = () => {
-  return <div>this is brands page</div>;
+const Brands = () => {
+  return (
+    <div>
+      <ManageBrands />
+    </div>
+  );
 };
 
-export default ManageBrands;
+export default Brands;

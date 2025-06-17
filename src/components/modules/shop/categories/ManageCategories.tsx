@@ -4,10 +4,21 @@ import { NMTable } from "@/components/ui/NMTable";
 import { ColumnDef } from "@tanstack/react-table";
 import { ICategory } from "@/types/category";
 import { Badge } from "@/components/ui/badge";
-import { Delete } from "lucide-react";
+import { Trash } from "lucide-react";
+import { useState } from "react";
+import DeleteModal from "./DeleteCategoryModel";
+
 export type TCategory = ICategory[];
 
 const ManageCategories = ({ categories }: { categories: TCategory }) => {
+  const [open, setOpen] = useState(false);
+  const [selectedCategory, setSelectedCategory] = useState<ICategory | null>(
+    null
+  );
+  const handleDelete = (deleteInfo: ICategory) => {
+    setSelectedCategory(deleteInfo);
+    setOpen(true);
+  };
   const columns: ColumnDef<ICategory>[] = [
     {
       accessorKey: "name",
@@ -25,9 +36,12 @@ const ManageCategories = ({ categories }: { categories: TCategory }) => {
     {
       accessorKey: "action",
       header: "Action",
-      cell: () => (
+      cell: ({ row }) => (
         <div>
-          <Delete />
+          <Trash
+            className="text-red-600"
+            onClick={() => handleDelete(row.original)}
+          />
         </div>
       ),
     },
@@ -41,6 +55,7 @@ const ManageCategories = ({ categories }: { categories: TCategory }) => {
         </div>
       </div>
       <NMTable data={categories} columns={columns} />
+      <DeleteModal setOpen={setOpen} open={open} cateGory={selectedCategory} />
     </div>
   );
 };
