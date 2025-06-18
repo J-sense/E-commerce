@@ -1,7 +1,12 @@
+import ManageProducts from "@/components/modules/shop/products/ManageProducts";
 import React from "react";
 
 const page = () => {
-  return <div>this is all products page</div>;
+  return (
+    <div>
+      <ManageProducts />
+    </div>
+  );
 };
 
 export default page;
