@@ -27,7 +27,12 @@ const AddProductForm = () => {
       weight: "",
       description: "",
       keyFeatures: [{ value: "" }],
+      availableColors: [{ value: "" }],
     },
+  });
+  const { append: appendColors, fields: colourField } = useFieldArray({
+    control: form.control,
+    name: "availableColors",
   });
   const { append: featuresAppend, fields: featuresField } = useFieldArray({
     control: form.control,
@@ -35,6 +40,9 @@ const AddProductForm = () => {
   });
   const handleFeature = () => {
     featuresAppend({ value: "" });
+  };
+  const handleColors = () => {
+    appendColors({ value: "" });
   };
   const onSubmit: SubmitHandler<FieldValues> = async (data) => {
     console.log(data);
@@ -187,9 +195,34 @@ const AddProductForm = () => {
           <div>
             <div className="flex justify-between">
               <h1 className="text-purple-700 font-bold text-2xl">Colors</h1>
-              <div className="border p-2 rounded-2xl" onClick={handleFeature}>
+              <div className="border p-2 rounded-2xl" onClick={handleColors}>
                 <PlusIcon />
               </div>
+            </div>
+            <div>
+              {colourField.map((colour, idx) => (
+                <div key={colour.id}>
+                  <FormField
+                    control={form.control}
+                    name={`availableColors.${idx}.value`}
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="text-zinc-700 dark:text-purple-300">
+                          Color {idx + 1}
+                        </FormLabel>
+                        <FormControl>
+                          <Input
+                            placeholder={`key feature ${idx + 1}`}
+                            className="focus-visible:ring-2 focus-visible:ring-purple-500 mb-2"
+                            {...field}
+                            value={field.value || ""}
+                          />
+                        </FormControl>
+                      </FormItem>
+                    )}
+                  />
+                </div>
+              ))}
             </div>
           </div>
           <div className="flex justify-end">
