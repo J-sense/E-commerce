@@ -184,6 +184,14 @@ const AddProductForm = () => {
               ))}
             </div>
           </div>
+          <div>
+            <div className="flex justify-between">
+              <h1 className="text-purple-700 font-bold text-2xl">Colors</h1>
+              <div className="border p-2 rounded-2xl" onClick={handleFeature}>
+                <PlusIcon />
+              </div>
+            </div>
+          </div>
           <div className="flex justify-end">
             <Button
               type="submit"
