@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import {
@@ -17,18 +18,40 @@ import {
 } from "react-hook-form";
 import { Textarea } from "@/components/ui/textarea";
 import { PlusIcon } from "lucide-react";
+import { useEffect, useState } from "react";
+import { getAllCategories } from "@/services/shop";
+import { getAllBrands } from "@/services/shop/brand";
+import { ICategory } from "@/types/category";
+import { IBrand } from "../brands/ManageBrands";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 const AddProductForm = () => {
+  const [categores, setCategories] = useState<ICategory[] | []>([]);
+  const [brand, setBrand] = useState<IBrand[] | []>([]);
+  console.log(categores);
   const form = useForm({
     defaultValues: {
       name: "",
       price: "",
+      category: "",
+      brand: "",
       stock: "",
       weight: "",
       description: "",
       keyFeatures: [{ value: "" }],
       availableColors: [{ value: "" }],
+      specification: [{ key: "", value: "" }],
     },
+  });
+  const { append: specAppend, fields: specFields } = useFieldArray({
+    control: form.control,
+    name: "specification",
   });
   const { append: appendColors, fields: colourField } = useFieldArray({
     control: form.control,
@@ -44,8 +67,34 @@ const AddProductForm = () => {
   const handleColors = () => {
     appendColors({ value: "" });
   };
+  const handleSpec = () => {
+    specAppend({ key: "", value: "" });
+  };
+  useEffect(() => {
+    const fetchData = async () => {
+      const [categoriesData, brandsData] = await Promise.all([
+        getAllCategories(),
+        getAllBrands(),
+      ]);
+      setCategories(categoriesData?.data);
+      setBrand(brandsData?.data);
+    };
+
+    fetchData();
+  }, []);
   const onSubmit: SubmitHandler<FieldValues> = async (data) => {
-    console.log(data);
+    const specification: any = {};
+    data?.specification?.forEach(
+      (spec: { key: string; value: string }) =>
+        (specification[spec.key] = spec.value)
+    );
+    const colours = data?.availableColors.map(
+      (item: { value: string }) => item?.value
+    );
+    const features = data?.keyFeatures.map(
+      (item: { value: string }) => item?.value
+    );
+    console.log(features, colours, specification);
   };
 
   return (
@@ -92,6 +141,60 @@ const AddProductForm = () => {
                       value={field.value || ""}
                     />
                   </FormControl>
+                </FormItem>
+              )}
+            />
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <FormField
+              control={form.control}
+              name="brand"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Brand</FormLabel>
+                  <Select
+                    onValueChange={field.onChange}
+                    defaultValue={field.value}
+                  >
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select a Product Category" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      {brand.map((item, idx) => (
+                        <SelectItem value="item?.name" key={idx}>
+                          {item?.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="category"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Category</FormLabel>
+                  <Select
+                    onValueChange={field.onChange}
+                    defaultValue={field.value}
+                  >
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select a Product Category" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      {categores.map((item, idx) => (
+                        <SelectItem value="item?.name" key={idx}>
+                          {item?.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                 </FormItem>
               )}
             />
@@ -223,6 +326,68 @@ const AddProductForm = () => {
                   />
                 </div>
               ))}
+            </div>
+          </div>
+          <div>
+            <div className="flex justify-between">
+              <h1 className="text-purple-700 font-bold text-2xl">
+                Specification
+              </h1>
+              <div className="border p-2 rounded-2xl" onClick={handleSpec}>
+                <PlusIcon />
+              </div>
+            </div>
+            <div className="grid grid-cols-2 gap-8 ">
+              <div>
+                {specFields.map((field, idx) => (
+                  <div key={field.id}>
+                    <FormField
+                      control={form.control}
+                      name={`specification.${idx}.key`}
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="text-zinc-700 dark:text-purple-300">
+                            Specification key {idx + 1}
+                          </FormLabel>
+                          <FormControl>
+                            <Input
+                              placeholder={`Specification ${idx + 1}`}
+                              className="focus-visible:ring-2 focus-visible:ring-purple-500 mb-2"
+                              {...field}
+                              value={field.value || ""}
+                            />
+                          </FormControl>
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+                ))}
+              </div>
+              <div>
+                {specFields.map((field, idx) => (
+                  <div key={field.id}>
+                    <FormField
+                      control={form.control}
+                      name={`specification.${idx}.value`}
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="text-zinc-700 dark:text-purple-300">
+                            Specification value {idx + 1}
+                          </FormLabel>
+                          <FormControl>
+                            <Input
+                              placeholder={`Specification ${idx + 1}`}
+                              className="focus-visible:ring-2 focus-visible:ring-purple-500 mb-2"
+                              {...field}
+                              value={field.value || ""}
+                            />
+                          </FormControl>
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
           <div className="flex justify-end">
