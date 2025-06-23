@@ -34,11 +34,17 @@ import {
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { motion } from "framer-motion";
+import NMImageUploader from "@/components/ui/core/NMImageUploader";
+import ImagePreviewer from "@/components/ui/core/NMImageUploader/ImagePreviewer";
+import { createPr } from "@/services/shop/product";
+import { toast } from "sonner";
 
 const AddProductForm = () => {
   const [categories, setCategories] = useState<ICategory[] | []>([]);
   const [brands, setBrands] = useState<IBrand[] | []>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [imageFiles, setImageFiles] = useState<File[]>([]);
+  const [imagePreview, setImagePreview] = useState<string[]>([]);
 
   const form = useForm({
     defaultValues: {
@@ -54,7 +60,9 @@ const AddProductForm = () => {
       specification: [{ key: "", value: "" }],
     },
   });
-
+  // const {
+  //   formState: { isSubmitting },
+  // } = form;
   const {
     append: specAppend,
     fields: specFields,
@@ -145,6 +153,10 @@ const AddProductForm = () => {
       const features = data?.keyFeatures.map(
         (item: { value: string }) => item?.value
       );
+      // const cate = categories.find((cate) => cate?.name == data.category);
+      // const br = brands.find((cate) => cate?.name == data?.brand);
+      console.log(data?.category);
+      console.log(data?.brand);
 
       const modifiedData = {
         name: data.name,
@@ -152,14 +164,29 @@ const AddProductForm = () => {
         price: Number(data.price),
         stock: Number(data.stock),
         weight: Number(data.weight),
-        category: data.category,
-        brand: data.brand,
+        category: data?.category,
+        brand: data?.brand,
         keyFeatures: features,
         availableColors: colours,
         specification: specification,
       };
+      const formData = new FormData();
+      formData.append("data", JSON.stringify(modifiedData));
+      for (const file of imageFiles) {
+        formData.append("images", file);
+      }
+      try {
+        const res = await createPr(formData);
+        console.log(res);
+        if (res.success) {
+          toast.success(res?.message);
+        } else {
+          toast.error(res.message);
+        }
+      } catch (error: any) {
+        console.log(error);
+      }
 
-      console.log(modifiedData);
       // Here you would typically call your API to submit the data
       // await submitProduct(modifiedData);
     } catch (error) {
@@ -270,7 +297,7 @@ const AddProductForm = () => {
                           </FormControl>
                           <SelectContent>
                             {brands.map((brand) => (
-                              <SelectItem value={brand?.name} key={brand._id}>
+                              <SelectItem value={brand?._id} key={brand._id}>
                                 {brand?.name}
                               </SelectItem>
                             ))}
@@ -298,7 +325,7 @@ const AddProductForm = () => {
                           <SelectContent>
                             {categories.map((category) => (
                               <SelectItem
-                                value={category?.name}
+                                value={category?._id}
                                 key={category._id}
                               >
                                 {category?.name}
@@ -639,6 +666,28 @@ const AddProductForm = () => {
                 ))}
               </CardContent>
             </Card>
+            <div className="w-full md:w-1/2">
+              <FormLabel className="text-gray-700 block mb-2">
+                Shop Logo
+              </FormLabel>
+
+              <ImagePreviewer
+                setImageFiles={setImageFiles}
+                setImagePreview={setImagePreview}
+                imagePreview={imagePreview}
+              />
+
+              <NMImageUploader
+                setImageFiles={setImageFiles}
+                setImagePreview={setImagePreview}
+                label="Upload logo"
+                className="border-2 border-dashed border-gray-300 rounded-lg p-3 hover:border-primary transition-colors w-full"
+              />
+
+              <p className="text-xs text-gray-500 mt-1">
+                Recommended size: 300x300px, Max file size: 5MB
+              </p>
+            </div>
 
             {/* Submit Button */}
             <div className="flex justify-end pt-4">
