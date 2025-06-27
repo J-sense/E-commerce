@@ -1,6 +1,6 @@
 import ManageBrands from "@/components/modules/shop/brands/ManageBrands";
 
-const Brands = () => {
+const Brands = async () => {
   return (
     <div>
       <ManageBrands />
