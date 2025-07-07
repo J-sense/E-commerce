@@ -1,21 +1,31 @@
 export type IProduct = {
   _id: string;
   name: string;
+  slug: string;
   description: string;
+  imageUrls: string[];
+  availableColors: string[];
+  keyFeatures: string[];
+  specification: Record<string, string>;
   price: number;
-  stock: number;
+  offerPrice: number | null;
   weight: number;
-  category: {
-    _id: string;
-    name: string;
-  }; // category ID
+  stock: number;
+  averageRating: number;
+  ratingCount: number;
+  isActive: boolean;
   brand: {
     _id: string;
     name: string;
-  }; // brand ID
-  availableColors: string[];
-  specification: {
-    [key: string]: string; // dynamic specification fields
   };
-  keyFeatures: string[];
+  category: {
+    _id: string;
+    name: string;
+  };
+  shop: {
+    _id: string;
+    shopName: string;
+  };
+  createdAt: string;
+  updatedAt: string;
 };
