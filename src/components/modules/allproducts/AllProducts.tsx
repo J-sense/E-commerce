@@ -1,6 +1,6 @@
 import { getAllProducts } from "@/services/shop/product";
 import Pr from "./Pr";
-import Sidebar from "./Sidebar";
+import { Sidebar } from "./Sidebar";
 
 const AllProducts = async () => {
   const { data } = await getAllProducts();
