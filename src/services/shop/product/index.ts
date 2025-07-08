@@ -18,13 +18,16 @@ export const createPr = async (data: FormData) => {
   }
 };
 
-export const getAllProducts = async () => {
+export const getAllProducts = async (page?: string) => {
   try {
-    const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_API}/product`, {
-      headers: {
-        Authorization: (await cookies()).get("accessToken")!.value,
-      },
-    });
+    const res = await fetch(
+      `${process.env.NEXT_PUBLIC_BASE_API}/product?limit=1&page=${page}`,
+      {
+        headers: {
+          Authorization: (await cookies()).get("accessToken")!.value,
+        },
+      }
+    );
     return res.json();
   } catch (error: any) {
     return Error(error);

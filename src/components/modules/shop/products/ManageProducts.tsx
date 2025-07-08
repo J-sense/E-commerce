@@ -8,8 +8,9 @@ import { Eye, Pencil, PlusCircle, Trash2 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { useState } from "react";
 import { Badge } from "@/components/ui/badge";
+import NMTablePagination from "@/components/ui/NMTable/NMTablePagination";
 
-const ManageProducts = ({ product }: { product: IProduct[] }) => {
+const ManageProducts = ({ product, meta }: { product: IProduct[] }) => {
   const [searchTerm, setSearchTerm] = useState("");
 
   const columns: ColumnDef<IProduct>[] = [
@@ -136,6 +137,7 @@ const ManageProducts = ({ product }: { product: IProduct[] }) => {
 
       <div className="rounded-lg border border-gray-200 bg-white shadow-sm overflow-hidden">
         <NMTable data={product} columns={columns} />
+        <NMTablePagination totalPage={meta.totalPage} />
       </div>
     </div>
   );
